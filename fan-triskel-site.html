@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAN-TRISKEL 🐾</title>
+<style>
+:root{--pink:#ff4f9a;--dark:#15131a;--card:#211e27;--muted:#b9b1bd;--light:#fff8fc}
+*{box-sizing:border-box}
+body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--dark);color:var(--light)}
+header{position:sticky;top:0;z-index:10;background:#15131aee;backdrop-filter:blur(10px);border-bottom:1px solid #39333f;padding:12px 5%;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:12px;font-weight:900;letter-spacing:.5px}
+.logo{width:48px;height:48px;border-radius:50%;background:var(--pink);display:grid;place-items:center;color:#19141b;font-size:23px;border:3px solid #fff}
+.brand span{font-size:1.15rem}.brand b{color:var(--pink)}
+nav{display:flex;gap:8px;flex-wrap:wrap}
+button,.navbtn{border:0;border-radius:999px;padding:10px 15px;font-weight:700;cursor:pointer;background:#302a35;color:white}
+button:hover,.navbtn:hover{filter:brightness(1.12)}
+.primary{background:var(--pink);color:#20141a}
+.hero{padding:60px 5% 35px;display:grid;grid-template-columns:1.2fr .8fr;gap:25px;align-items:center;background:radial-gradient(ellipse at 80% 20%,#5a2440 0,transparent 45%)}
+.hero h1{font-size:clamp(2rem,6vw,4rem);line-height:1.02;margin:0 0 15px}.hero h1 span{color:var(--pink)}
+.hero p{font-size:1.1rem;color:var(--muted);max-width:580px}
+.hero-bubble{min-height:220px;border-radius:28px;background:linear-gradient(145deg,#ff8abc,#ff4f9a);display:grid;place-items:center;font-size:110px;box-shadow:0 20px 50px #ff4f9a22}
+main{padding:25px 5% 70px}
+.section-title{display:flex;align-items:end;justify-content:space-between;gap:15px;margin:18px 0 20px}
+.section-title h2{font-size:1.7rem;margin:0}.section-title p{color:var(--muted);margin:5px 0 0}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px}
+.photo-card{background:var(--card);border-radius:18px;overflow:hidden;border:1px solid #38313e}
+.photo-placeholder{aspect-ratio:4/3;display:grid;place-items:center;font-size:70px;background:linear-gradient(135deg,#3b2938,#28232d);cursor:pointer}
+.photo-card img{width:100%;aspect-ratio:4/3;object-fit:cover;display:block;cursor:pointer}
+.caption{padding:12px 14px}.caption h3{margin:0 0 4px}.caption small{color:var(--muted)}
+.actions{display:flex;align-items:center;gap:8px;margin-top:10px}.like{background:#342a36;color:#ff83b7}.like.liked{background:#ff4f9a;color:#21141b}
+.comment-preview{font-size:.9rem;color:var(--muted);margin-top:8px}
+.panel{background:var(--card);border:1px solid #39323f;border-radius:18px;padding:20px;margin:20px 0}
+.hidden{display:none!important}
+input,textarea{width:100%;padding:12px 14px;border-radius:12px;border:1px solid #4b4251;background:#17151b;color:white;margin:7px 0;font:inherit}
+textarea{min-height:95px;resize:vertical}
+form{max-width:440px}
+.notice{color:var(--muted);font-size:.9rem}
+footer{padding:25px 5%;border-top:1px solid #39333f;text-align:center;color:var(--muted)}
+.modal{position:fixed;inset:0;background:#08070bcc;display:none;z-index:30;align-items:center;justify-content:center;padding:20px}
+.modal.open{display:flex}
+.modalbox{background:var(--card);border-radius:18px;padding:20px;max-width:620px;width:100%;max-height:90vh;overflow:auto}
+.modalbox img{width:100%;max-height:55vh;object-fit:contain;border-radius:12px}
+.close{float:right;background:#453b49}
+@media(max-width:700px){.hero{grid-template-columns:1fr;padding-top:40px}.hero-bubble{min-height:160px;font-size:80px}header{align-items:flex-start}.brand span{font-size:1rem}nav{justify-content:flex-end}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand"><div class="logo">🐾</div><span><b>FAN</b>-TRISKEL</span></div>
+  <nav>
+    <button onclick="showSection('home')">Accueil</button>
+    <button onclick="showSection('gallery')">Galerie</button>
+    <button onclick="showSection('account')">Compte</button>
+  </nav>
+</header>
+<section class="hero" id="home">
+  <div>
+    <h1>Bienvenue dans le monde de <span>Triskel !</span> 🐶</h1>
+    <p>Le site des fans de Triskel. Découvre ses aventures, regarde les photos et partage ta bonne humeur !</p>
+    <button class="primary" onclick="showSection('gallery')">Voir les photos 🖼️</button>
+  </div>
+  <div class="hero-bubble" aria-label="Illustration chien">🐕</div>
+</section>
+<main>
+  <section id="gallery">
+    <div class="section-title"><div><h2>📸 Galerie de Triskel</h2><p>Les photos sont visibles par tout le monde, même sans compte.</p></div></div>
+    <div class="grid" id="photoGrid"></div>
+  </section>
+  <section id="account" class="panel hidden">
+    <h2>👤 Espace membre</h2>
+    <p id="accountStatus" class="notice">Connecte-toi pour liker les photos et commenter.</p>
+    <form id="loginForm">
+      <h3>Se connecter</h3>
+      <input id="loginEmail" type="email" placeholder="Adresse e-mail" required>
+      <input id="loginPass" type="password" placeholder="Mot de passe" required>
+      <button class="primary" type="submit">Connexion (démo)</button>
+    </form>
+    <form id="signupForm">
+      <h3>Créer un compte (démo)</h3>
+      <input id="signupName" placeholder="Ton pseudo" required>
+      <input id="signupEmail" type="email" placeholder="Adresse e-mail" required>
+      <input id="signupPass" type="password" placeholder="Mot de passe" minlength="4" required>
+      <button type="submit">Créer le compte</button>
+    </form>
+    <button id="logoutBtn" class="hidden" onclick="logout()">Déconnexion</button>
+    <p class="notice">Prototype : les comptes sont enregistrés seulement dans ce navigateur. Ce n'est pas une vraie sécurité pour un site publié.</p>
+  </section>
+  <section id="admin" class="panel hidden">
+    <h2>🛠️ Espace publication</h2>
+    <p class="notice">Réservé au propriétaire du site. En prototype, cette restriction n'est pas sécurisée.</p>
+    <form id="uploadForm">
+      <input id="photoFile" type="file" accept="image/*" required>
+      <input id="photoTitle" placeholder="Titre de la photo" required>
+      <button class="primary" type="submit">Ajouter à la galerie</button>
+    </form>
+  </section>
+</main>
+<footer>FAN-TRISKEL 🐾 — Un site de fans pour Triskel</footer>
+
+<div class="modal" id="photoModal" onclick="if(event.target===this)closeModal()">
+  <div class="modalbox"><button class="close" onclick="closeModal()">Fermer ✕</button><div id="modalContent"></div></div>
+</div>
+<script>
+const defaultPhotos = [
+ {id:'sample1',title:'Triskel, la star 🐾',emoji:'🐕',date:'Photo à ajouter'},
+ {id:'sample2',title:'Une nouvelle aventure !',emoji:'🎾',date:'Photo à ajouter'},
+ {id:'sample3',title:'La petite vedette',emoji:'🌟',date:'Photo à ajouter'}
+];
+let photos=JSON.parse(localStorage.getItem('fanTriskelPhotos')||'null')||defaultPhotos;
+let users=JSON.parse(localStorage.getItem('fanTriskelUsers')||'[]');
+let currentUser=JSON.parse(localStorage.getItem('fanTriskelCurrent')||'null');
+const ownerEmail=''; // À définir au moment de la mise en ligne, avec authentification serveur.
+function persist(){localStorage.setItem('fanTriskelPhotos',JSON.stringify(photos))}
+function showSection(id){
+ ['home','gallery','account','admin'].forEach(s=>document.getElementById(s)?.classList.toggle('hidden',s!=='home'&&s!==id));
+ if(id==='account')document.getElementById('account').classList.remove('hidden');
+ window.scrollTo({top: id==='home'?0:document.getElementById(id).offsetTop-70,behavior:'smooth'});
+}
+function render(){
+ const grid=document.getElementById('photoGrid');
+ grid.innerHTML='';
+ photos.forEach(p=>{
+  const liked=currentUser&&(p.likes||[]).includes(currentUser.email);
+  const comments=p.comments||[];
+  const card=document.createElement('article');card.className='photo-card';
+  const media=p.data?`<img src="${p.data}" alt="${esc(p.title)}" onclick="openPhoto('${p.id}')">`:`<div class="photo-placeholder" onclick="openPhoto('${p.id}')">${p.emoji||'🐾'}</div>`;
+  card.innerHTML=`${media}<div class="caption"><h3>${esc(p.title)}</h3><small>${esc(p.date||'')}</small><div class="actions"><button class="like ${liked?'liked':''}" onclick="likePhoto('${p.id}')">❤️ ${((p.likes||[]).length)}</button><button onclick="openPhoto('${p.id}')">💬 ${comments.length}</button></div><div class="comment-preview">${comments.length?esc(comments[comments.length-1].text):'Laisse un commentaire en te connectant !'}</div></div>`;
+  grid.appendChild(card);
+ });
+ updateAccount();
+}
+function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function updateAccount(){
+ const status=document.getElementById('accountStatus');
+ if(currentUser){status.textContent='Connecté en tant que '+currentUser.name+'.';document.getElementById('loginForm').classList.add('hidden');document.getElementById('signupForm').classList.add('hidden');document.getElementById('logoutBtn').classList.remove('hidden');}
+ else{status.textContent='Connecte-toi pour liker les photos et commenter.';document.getElementById('loginForm').classList.remove('hidden');document.getElementById('signupForm').classList.remove('hidden');document.getElementById('logoutBtn').classList.add('hidden');}
+ document.getElementById('admin').classList.toggle('hidden',!currentUser||currentUser.email!==ownerEmail||!ownerEmail);
+}
+function likePhoto(id){
+ if(!currentUser){showSection('account');alert('Connecte-toi pour liker une photo ❤️');return}
+ const p=photos.find(x=>x.id===id);p.likes=p.likes||[];
+ const idx=p.likes.indexOf(currentUser.email);if(idx>=0)p.likes.splice(idx,1);else p.likes.push(currentUser.email);
+ persist();render();
+}
+function openPhoto(id){
+ const p=photos.find(x=>x.id===id);if(!p)return;
+ const comments=p.comments||[];
+ document.getElementById('modalContent').innerHTML=`<h2>${esc(p.title)}</h2>${p.data?`<img src="${p.data}" alt="">`:`<div style="font-size:90px;text-align:center">${p.emoji||'🐾'}</div>`}<h3>Commentaires (${comments.length})</h3><div>${comments.map(c=>`<p><b>${esc(c.name)} :</b> ${esc(c.text)}</p>`).join('')||'<p class="notice">Pas encore de commentaire.</p>'}</div>${currentUser?`<form onsubmit="addComment(event,'${p.id}')"><textarea id="commentText" placeholder="Écris ton commentaire..." required></textarea><button class="primary">Envoyer</button></form>`:`<p class="notice">Connecte-toi pour commenter.</p><button onclick="closeModal();showSection('account')">Se connecter</button>`}`;
+ document.getElementById('photoModal').classList.add('open');
+}
+function addComment(e,id){e.preventDefault();const text=document.getElementById('commentText').value.trim();if(!text)return;const p=photos.find(x=>x.id===id);p.comments=p.comments||[];p.comments.push({name:currentUser.name,text});persist();render();openPhoto(id)}
+function closeModal(){document.getElementById('photoModal').classList.remove('open')}
+document.getElementById('loginForm').addEventListener('submit',e=>{e.preventDefault();const email=document.getElementById('loginEmail').value.trim().toLowerCase(),pass=document.getElementById('loginPass').value;const u=users.find(x=>x.email===email&&x.pass===pass);if(!u){alert('Identifiants incorrects (démo).');return}currentUser={name:u.name,email:u.email};localStorage.setItem('fanTriskelCurrent',JSON.stringify(currentUser));render();showSection('gallery')});
+document.getElementById('signupForm').addEventListener('submit',e=>{e.preventDefault();const name=document.getElementById('signupName').value.trim(),email=document.getElementById('signupEmail').value.trim().toLowerCase(),pass=document.getElementById('signupPass').value;if(users.some(x=>x.email===email)){alert('Cette adresse a déjà un compte.');return}users.push({name,email,pass});localStorage.setItem('fanTriskelUsers',JSON.stringify(users));currentUser={name,email};localStorage.setItem('fanTriskelCurrent',JSON.stringify(currentUser));render();showSection('gallery')});
+function logout(){currentUser=null;localStorage.removeItem('fanTriskelCurrent');render();showSection('gallery')}
+document.getElementById('uploadForm').addEventListener('submit',e=>{e.preventDefault();if(!currentUser||!ownerEmail||currentUser.email!==ownerEmail){alert('Publication réservée au propriétaire.');return}const file=document.getElementById('photoFile').files[0];if(!file)return;const reader=new FileReader();reader.onload=()=>{photos.unshift({id:'p'+Date.now(),title:document.getElementById('photoTitle').value.trim(),data:reader.result,date:new Date().toLocaleDateString('fr-FR'),likes:[],comments:[]});persist();render();e.target.reset()};reader.readAsDataURL(file)});
+render();
+</script>
+</body>
+</html>
